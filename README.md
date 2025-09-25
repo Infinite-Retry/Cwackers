@@ -34,8 +34,13 @@ To integrate Cwackers into your Compose Multiplatform project, follow these step
 1.  **Add the dependency:**
 
     ```kotlin
-    // In your module's build.gradle.kts
-    iosMain {
+    // For KMP projects:
+    commonMain {
+      implementation("com.infiniteretry.cwackers:cwackers:1.0.0")
+    }
+    
+    // For Android projects:
+    dependencies {
       implementation("com.infiniteretry.cwackers:cwackers:1.0.0")
     }
     ```
