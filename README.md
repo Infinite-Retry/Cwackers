@@ -13,19 +13,19 @@ Out of the box, Compose only supports simple grid tiling using an ImageShader. W
 This means all tiling modes (grid, brick by column, brick by row, hex by column, and hex by row) are available. All options for each mode, including spacing, tile alpha, and offsets are also available.
 
 # Grid
-![](images/grid_tiling.png)
+<img src="images/grid_tiling.png" width="400" />
 
 # Brick by Column
-![](images/brick_by_column.png)
+<img src="images/brick_by_column.png" width="400" />
 
 # Brick by Row
-![](images/brick_by_row.png)
+<img src="images/brick_by_row.png" width="400" />
 
 # Hex by Column
-![](images/hex_by_column.png)
+<img src="images/hex_by_column.png" width="400" />
 
 # Hex by Row
-![](images/hex_by_row.png)
+<img src="images/hex_by_row.png" width="400" />
 
 ## Getting Started
 
