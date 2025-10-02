@@ -1,24 +1,18 @@
 package com.infiniteretry.cwackers
 
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
 
-@Composable
 fun Modifier.tiledBackground(
   painter: Painter,
   tileMode: TileMode = TileMode.Grid(),
   tileAlpha: Float = 1f,
   tileSize: (Size, Size) -> Size = { _, bitmapSize -> bitmapSize },
 ): Modifier {
-  val density = LocalDensity.current
-
   return drawBehind {
     val tileSize = tileSize(size, painter.intrinsicSize)
 
@@ -79,24 +73,24 @@ fun Modifier.tiledBackground(
   }
 }
 
-private fun TileMode.columnWidth(density: Density, width: Float): Float {
+private fun TileMode.columnWidth(density: Float, width: Float): Float {
   val tileWidth = tileDimension(density, width, horizontalSpacing)
   return if (this is TileMode.HexByColumn) tileWidth * 0.75f else tileWidth
 }
 
-private fun TileMode.rowHeight(density: Density, height: Float): Float {
+private fun TileMode.rowHeight(density: Float, height: Float): Float {
   val tileHeight = tileDimension(density, height, verticalSpacing)
   return if (this is TileMode.HexByRow) tileHeight * 0.75f else tileHeight
 }
 
 private fun tileDimension(
-  density: Density,
+  density: Float,
   dimensionValue: Float,
   spacing: TileSpacing,
 ): Float {
   return when (spacing) {
     is TileSpacing.None -> dimensionValue
-    is TileSpacing.Dp -> dimensionValue + with(density) { spacing.value.toPx() }
+    is TileSpacing.Dp -> dimensionValue + (spacing.value.value * density)
     is TileSpacing.Percent -> dimensionValue * (1 + spacing.value)
   }
 }
