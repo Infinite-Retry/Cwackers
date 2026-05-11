@@ -2,16 +2,19 @@ package com.infiniteretry.cwackers
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.painter.Painter
+import kotlin.math.floor
 
 fun Modifier.tiledBackground(
   painter: Painter,
   tileMode: TileMode = TileMode.Grid(),
   tileAlpha: Float = 1f,
   tileSize: (Size, Size) -> Size = { _, bitmapSize -> bitmapSize },
+  offset: () -> Offset = { Offset.Zero },
 ): Modifier {
   return drawBehind {
     val tileSize = tileSize(size, painter.intrinsicSize)
@@ -19,6 +22,9 @@ fun Modifier.tiledBackground(
     val columnWidth = tileMode.columnWidth(density, tileSize.width)
     val rowHeight = tileMode.rowHeight(density, tileSize.height)
     val tileOffset = tileMode.offset()
+    val patternOffset = offset()
+    val xShift = patternOffset.x.mod(columnWidth) - columnWidth
+    val yShift = patternOffset.y.mod(rowHeight) - rowHeight
 
     val primaryContainerDimension: Float
     val secondaryContainerDimension: Float
@@ -26,30 +32,34 @@ fun Modifier.tiledBackground(
     val secondaryAxisDimension: Float
     val initialPrimaryOffset: Float
     val initialSecondaryOffset: Float
+    val primaryIndexBase: Int
     if (tileMode.isByColumn) {
       primaryContainerDimension = size.width
       secondaryContainerDimension = size.height
       primaryAxisDimension = columnWidth
       secondaryAxisDimension = rowHeight
-      initialPrimaryOffset = -tileSize.width - (tileSize.width - columnWidth) / 2
-      initialSecondaryOffset = -tileSize.height - (tileSize.height - rowHeight) / 2
+      initialPrimaryOffset = -tileSize.width - (tileSize.width - columnWidth) / 2 + xShift
+      initialSecondaryOffset = -tileSize.height - (tileSize.height - rowHeight) / 2 + yShift
+      primaryIndexBase = -floor(patternOffset.x / columnWidth).toInt()
     } else {
       primaryContainerDimension = size.height
       secondaryContainerDimension = size.width
       primaryAxisDimension = rowHeight
       secondaryAxisDimension = columnWidth
-      initialPrimaryOffset = -tileSize.height - (tileSize.height - rowHeight) / 2
-      initialSecondaryOffset = -tileSize.width - (tileSize.width - columnWidth) / 2
+      initialPrimaryOffset = -tileSize.height - (tileSize.height - rowHeight) / 2 + yShift
+      initialSecondaryOffset = -tileSize.width - (tileSize.width - columnWidth) / 2 + xShift
+      primaryIndexBase = -floor(patternOffset.y / rowHeight).toInt()
     }
 
     var primaryIndex = 0
     var primaryCoordinate = initialPrimaryOffset
 
     clipRect {
-      // TODO: are we by chance drawing way outside the bounds?
       while (primaryCoordinate < primaryContainerDimension) {
+        val logicalPrimaryIndex = primaryIndex + primaryIndexBase
         var secondaryCoordinate =
-          initialSecondaryOffset + (primaryIndex * tileOffset * secondaryAxisDimension) % secondaryAxisDimension
+          initialSecondaryOffset +
+            (logicalPrimaryIndex * tileOffset * secondaryAxisDimension).mod(secondaryAxisDimension)
 
         while (secondaryCoordinate < secondaryContainerDimension) {
           translate(

@@ -14,7 +14,7 @@ plugins {
 }
 
 group = "com.infiniteretry.cwackers"
-version = "1.0.0"
+version = "1.1.0"
 
 kotlin {
   androidTarget {
@@ -52,6 +52,7 @@ kotlin {
 
   sourceSets {
     commonMain.dependencies {
+      api(compose.foundation)
       api(compose.ui)
     }
   }
